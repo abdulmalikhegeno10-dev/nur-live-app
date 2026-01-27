@@ -1,80 +1,82 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic:wght@400;700&family=Poppins:wght@300;500;600&display=swap');
+
 body {
+    font-family: 'Poppins', 'Noto Sans Ethiopic', sans-serif;
+    /* የጀርባው ቀለም ወደ ጥቁር አረንጓዴ የተቀየረ የወርቁን ቀለም እንዲያጎላው ነው */
+    background: radial-gradient(circle, #002b1a 0%, #001a0f 100%);
     margin: 0;
-    font-family: 'Segoe UI', Arial, sans-serif;
-    /* ኢስላማዊ አረንጓዴ ዳራ */
-    background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
-    height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    color: white;
+    height: 100vh;
 }
 
-#setup-container {
-    background: rgba(255, 255, 255, 0.1);
+.container {
+    background-color: rgba(255, 255, 255, 0.05); /* ግልጽ የሆነ ጥቁር ሳጥን */
     padding: 40px;
-    border-radius: 20px;
-    backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 215, 0, 0.3); /* የወርቃማ መስመር */
-    text-align: center;
+    border-radius: 24px;
+    border: 1px solid #d4af37; /* የወርቅ ቀለም ዳርቻ */
     box-shadow: 0 15px 35px rgba(0,0,0,0.5);
     width: 90%;
-    max-width: 400px;
+    max-width: 380px;
+    text-align: center;
+    backdrop-filter: blur(10px); /* የመስታወት መሰል ዲዛይን */
 }
 
-/* የሎጎ ዲዛይን */
-.logo-circle {
-    width: 80px;
-    height: 80px;
-    background: #fbbf24; /* ወርቃማ ቀለም */
-    color: #064e3b;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin: 0 auto 15px;
-    box-shadow: 0 0 20px rgba(251, 191, 36, 0.4);
-}
-
+/* የወርቃማ ጽሑፍ ውጤት */
 h1 {
-    font-size: 1.6rem;
-    margin-bottom: 25px;
-    color: #fbbf24;
+    background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+h3 {
+    color: #d4af37; /* የወርቅ ቀለም */
+    font-weight: 500;
+    margin-bottom: 20px;
+}
+
+p {
+    color: #a0a0a0;
+    font-size: 14px;
 }
 
 input {
     width: 100%;
-    padding: 15px;
-    margin-bottom: 20px;
-    border: none;
-    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 15px;
+    border: 1px solid #333;
+    border-radius: 12px;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white; /* የሚጻፈው ጽሑፍ ነጭ እንዲሆን */
     box-sizing: border-box;
-    font-size: 1rem;
+}
+
+input:focus {
+    border-color: #d4af37;
     outline: none;
 }
 
+/* ወርቃማ ቁልፍ (Gold Button) */
 button {
     width: 100%;
     padding: 15px;
-    background-color: #fbbf24;
-    color: #064e3b;
+    background: linear-gradient(45deg, #bf953f, #d4af37);
+    color: #001a0f; /* በወርቁ ላይ ጥቁር ጽሑፍ እንዲታይ */
     border: none;
-    border-radius: 10px;
-    font-size: 1.1rem;
-    font-weight: bold;
+    border-radius: 12px;
     cursor: pointer;
-    transition: 0.3s;
+    font-size: 16px;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
 }
 
 button:hover {
-    background-color: #f59e0b;
-    transform: translateY(-2px);
-}
-
-#meet-container {
-    width: 100%;
-    height: 100vh;
-    display: none;
+    background: linear-gradient(45deg, #d4af37, #fcf6ba);
+    transform: scale(1.02);
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
 }
