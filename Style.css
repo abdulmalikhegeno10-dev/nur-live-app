@@ -1,0 +1,80 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    /* ኢስላማዊ አረንጓዴ ዳራ */
+    background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+
+#setup-container {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 40px;
+    border-radius: 20px;
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 215, 0, 0.3); /* የወርቃማ መስመር */
+    text-align: center;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+    width: 90%;
+    max-width: 400px;
+}
+
+/* የሎጎ ዲዛይን */
+.logo-circle {
+    width: 80px;
+    height: 80px;
+    background: #fbbf24; /* ወርቃማ ቀለም */
+    color: #064e3b;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0 auto 15px;
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.4);
+}
+
+h1 {
+    font-size: 1.6rem;
+    margin-bottom: 25px;
+    color: #fbbf24;
+}
+
+input {
+    width: 100%;
+    padding: 15px;
+    margin-bottom: 20px;
+    border: none;
+    border-radius: 10px;
+    box-sizing: border-box;
+    font-size: 1rem;
+    outline: none;
+}
+
+button {
+    width: 100%;
+    padding: 15px;
+    background-color: #fbbf24;
+    color: #064e3b;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    background-color: #f59e0b;
+    transform: translateY(-2px);
+}
+
+#meet-container {
+    width: 100%;
+    height: 100vh;
+    display: none;
+}
