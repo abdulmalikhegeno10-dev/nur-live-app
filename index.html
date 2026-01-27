@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salafiya Dawa - ሰለፊያ ዳእዋ</title>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
+    <style>
+        :root { --yt-red: #ff0000; --yt-black: #0f0f0f; --yt-white: #ffffff; --yt-gray: #606060; --yt-bg: #f9f9f9; --status-green: #2e7d32; }
+        body { font-family: "Roboto", Arial, sans-serif; background: var(--yt-bg); margin: 0; padding-bottom: 80px; color: var(--yt-black); overflow-x: hidden; }
+        
+        header { background: var(--yt-white); padding: 10px 15px; position: sticky; top: 0; z-index: 1000; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e5e5e5; }
+        .logo { color: var(--yt-red); font-size: 20px; font-weight: bold; text-decoration: none; display: flex; align-items: center; letter-spacing: -1px; }
+        .logo span { color: black; font-size: 14px; margin-left: 5px; font-weight: bold; }
+        .balance-badge { background: #e8f5e9; color: var(--status-green); padding: 5px 12px; border-radius: 6px; font-weight: bold; font-size: 14px; border: 1px solid #c8e6c9; }
+        
+        .container { max-width: 600px; margin: auto; }
+        .auth-box { background: white; padding: 20px; text-align: center; margin: 15px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        input, select, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #ccc; font-size: 14px; box-sizing: border-box; outline: none; }
+        .btn-red { background: var(--yt-red); color: white; border: none; font-weight: bold; cursor: pointer; border-radius: 25px; }
+        .btn-black { background: var(--yt-black); color: white; border: none; font-weight: bold; cursor: pointer; border-radius: 25px; }
+
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
+        .stat-card { background: #f1f1f1; padding: 10px; border-radius: 8px; text-align: center; }
+        .stat-card b { font-size: 18px; color: var(--yt-red); display: block; }
+        .stat-card span { font-size: 11px; color: var(--yt-gray); }
+
+        .rules-box { background: #fffde7; padding: 15px; border-radius: 8px; text-align: left; border-left: 4px solid #fbc02d; font-size: 13px; margin-top: 15px; }
+        .rules-box h4 { margin: 0 0 10px 0; color: #f57f17; }
+
+        .video-card { background: var(--yt-white); margin-bottom: 12px; border-bottom: 1px solid #eee; position: relative; }
+        .video-thumbnail-container { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000; }
+        .video-thumbnail { width: 100%; height: 100%; object-fit: contain; }
+        .video-info { padding: 12px; display: flex; gap: 12px; position: relative; }
+        .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: #00897b; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; }
+        .more-options { position: absolute; right: 10px; top: 12px; cursor: pointer; font-size: 20px; color: var(--yt-gray); }
+        .menu-dropdown { position: absolute; right: 10px; top: 40px; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); display: none; z-index: 100; min-width: 120px; }
+        .menu-dropdown button { border: none; background: none; text-align: left; padding: 10px 15px; font-size: 14px; color: red; width: 100%; }
+        
+        .action-bar { display: flex; padding: 0 12px 12px 12px; gap: 10px; }
+        .action-btn { background: #f2f2f2; border: none; font-size: 13px; padding: 8px 16px; cursor: pointer; border-radius: 20px; font-weight: 500; }
+
+        .nav-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #e5e5e5; z-index: 2000; }
+        .nav-item { text-align: center; font-size: 12px; color: var(--yt-gray); cursor: pointer; flex: 1; }
+        .nav-item.active { color: var(--yt-black); font-weight: bold; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+<header id="headerNav" class="hidden">
+    <a href="#" class="logo">▶ Salafiya <span>Dawa</span></a>
+    <div class="balance-badge" id="topBalance">0.00 ETB</div>
+</header>
+
+<div class="container">
+    <div id="authSection" class="auth-box">
+        <h2 style="color: var(--yt-red);">Salafiya Dawa</h2>
+        <div id="loginForm">
+            <input type="email" id="email" placeholder="Email Address">
+            <input type="password" id="pass" placeholder="Password">
+            <button class="btn-red" onclick="handleAuth('login')">Login</button>
+            <p>New? <a href="#" onclick="toggleAuth(false)">Create Account</a></p>
+        </div>
+        <div id="signupForm" class="hidden">
+            <input type="text" id="newName" placeholder="Full Name">
+            <input type="email" id="newEmail" placeholder="Email">
+            <input type="password" id="newPass" placeholder="Password">
+            <button class="btn-black" onclick="handleAuth('signup')">Sign Up</button>
+            <p>Have account? <a href="#" onclick="toggleAuth(true)">Login</a></p>
+        </div>
+    </div>
+
+    <div id="mainSection" class="hidden">
+        <div id="userProfile" class="hidden" style="padding:15px;">
+            <div class="auth-box" style="margin:0;">
+                <h3 id="pName">User Name</h3>
+                <div class="stats-grid">
+                    <div class="stat-card"><b id="statViews">0</b><span>Total Views</span></div>
+                    <div class="stat-card"><b class="displayBalance">0.00</b><span>ETB Earned</span></div>
+                </div>
+                
+                <hr>
+                <h4 style="text-align:left; margin-bottom:5px;">Payment Method</h4>
+                <select id="bankName">
+                    <option value="" disabled selected>ባንክ ይምረጡ (Select Bank)</option>
+                    <optgroup label="Digital Wallets">
+                        <option value="Telebirr">Telebirr (ቴሌብር)</option>
+                        <option value="CBE Birr">CBE Birr (ሲቢኢ ብር)</option>
+                        <option value="M-Pesa">M-Pesa (ኤም-ፔሳ)</option>
+                    </optgroup>
+                    <optgroup label="Banks">
+                        <option value="CBE">CBE (የኢትዮጵያ ንግድ ባንክ)</option>
+                        <option value="Abyssinia">Bank of Abyssinia (አቢሲኒያ ባንክ)</option>
+                        <option value="Dashen">Dashen Bank (ዳሸን ባንክ)</option>
+                        <option value="Awash">Awash Bank (አዋሽ ባንክ)</option>
+                        <option value="Oromia">Cooperative Bank of Oromia (የኦሮሚያ ህብረት ስራ ባንክ)</option>
+                        <option value="Hibret">Hibret Bank (ህብረት ባንክ)</option>
+                        <option value="Zemen">Zemen Bank (ዘመን ባንክ)</option>
+                        <option value="Nib">Nib International Bank (ንብ ባንክ)</option>
+                        <option value="Wegagen">Wegagen Bank (ወጋገን ባንክ)</option>
+                        <option value="Global">Global Bank (ግሎባል ባንክ)</option>
+                        <option value="Hijra">Hijra Bank (ሂጅራ ባንክ - ወለድ አልባ)</option>
+                        <option value="Zad">Zad Bank (ዛድ ባንክ - ወለድ አልባ)</option>
+                    </optgroup>
+                </select>
+                <input type="text" id="accNumber" placeholder="Account Number or Phone Number">
+                <button class="btn-red" onclick="requestWithdraw()">Withdraw Balance</button>
+            </div>
+
+            <div class="auth-box" style="margin-top:15px;">
+                <h4>Upload Dawa</h4>
+                <input type="file" id="vFile" accept="audio/*,video/*">
+                <button class="btn-black" id="uploadBtn" onclick="uploadPost()">Upload Now</button>
+            </div>
+
+            <div class="rules-box">
+                <h4>⚠️ Rules & Regulations</h4>
+                1. ከዳእዋ ውጪ ያሉ ቪዲዮዎችን መጫን በጥብቅ የተከለከለ ነው።<br>
+                2. የአንድ እይታ (1 View) ክፍያ 0.35 ETB ነው።<br>
+                3. ብር ወጪ ለማድረግ ቢያንስ 100 ETB መድረስ አለብዎት።<br>
+                4. የሰዎችን ቪዲዮ ሰርቆ መጫን አካውንት ያስዘጋል።
+            </div>
+            
+            <p onclick="logout()" style="color:red; cursor:pointer; text-align:center; font-weight:bold; margin-top:20px;">Sign Out</p>
+        </div>
+
+        <div id="feed"></div>
+    </div>
+</div>
+
+<nav id="navBar" class="nav-bar hidden">
+    <div onclick="showPage('home')" id="homeNav" class="nav-item active">🏠<br>Home</div>
+    <div onclick="showPage('profile')" id="profileNav" class="nav-item">👤<br>Profile</div>
+</nav>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyBGUITp85aexJFm4u5DbN9JG1pukBIXBX8",
+        authDomain: "dawa-platform-8fbc9.firebaseapp.com",
+        projectId: "dawa-platform-8fbc9",
+        storageBucket: "dawa-platform-8fbc9.firebasestorage.app",
+        messagingSenderId: "161559498824",
+        appId: "1:161559498824:web:babae39d2e68f57d30c87d",
+        databaseURL: "https://dawa-platform-8fbc9-default-rtdb.firebaseio.com"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    function toggleAuth(isLogin) {
+        document.getElementById('loginForm').classList.toggle('hidden', !isLogin);
+        document.getElementById('signupForm').classList.toggle('hidden', isLogin);
+    }
+
+    function showPage(p) {
+        document.getElementById('userProfile').classList.toggle('hidden', p !== 'profile');
+        document.getElementById('feed').classList.toggle('hidden', p === 'profile');
+        document.getElementById('homeNav').classList.toggle('active', p === 'home');
+        document.getElementById('profileNav').classList.toggle('active', p === 'profile');
+        if(p === 'home') loadPostsOnce();
+    }
+
+    function handleAuth(type) {
+        const e = (type==='signup' ? document.getElementById('newEmail').value : document.getElementById('email').value);
+        const p = (type==='signup' ? document.getElementById('newPass').value : document.getElementById('pass').value);
+        if(type === 'signup') {
+            const n = document.getElementById('newName').value;
+            auth.createUserWithEmailAndPassword(e, p).then(r => r.user.updateProfile({displayName: n}).then(() => location.reload()));
+        } else {
+            auth.signInWithEmailAndPassword(e, p).then(() => location.reload()).catch(() => alert("Error!"));
+        }
+    }
+
+    function logout() { auth.signOut().then(() => location.reload()); }
+
+    auth.onAuthStateChanged(user => {
+        if(user) {
+            document.getElementById('authSection').classList.add('hidden');
+            document.getElementById('headerNav').classList.remove('hidden');
+            document.getElementById('mainSection').classList.remove('hidden');
+            document.getElementById('navBar').classList.remove('hidden');
+            document.getElementById('pName').innerText = user.displayName;
+            loadPostsOnce();
+            updateBalanceRealtime();
+        }
+    });
+
+    function loadPostsOnce() {
+        db.ref('posts').once('value', snap => {
+            const feed = document.getElementById('feed'); feed.innerHTML = "";
+            let posts = [];
+            snap.forEach(c => { let p = c.val(); p.id = c.key; posts.push(p); });
+            posts.reverse().forEach(p => {
+                const media = p.fileType === 'video' ? `<video class="video-thumbnail" src="${p.fileUrl}" controls onplay="addView('${p.id}')"></video>` 
+                                                     : `<audio style="width:100%; padding:20px;" src="${p.fileUrl}" controls onplay="addView('${p.id}')"></audio>`;
+                const showMenu = p.userId === auth.currentUser.uid ? 'display:block;' : 'display:none;';
+                feed.insertAdjacentHTML('beforeend', `
+                    <div class="video-card" id="card-${p.id}">
+                        <div class="video-thumbnail-container">${media}</div>
+                        <div class="video-info">
+                            <div class="user-avatar">${p.teacherName.charAt(0)}</div>
+                            <div class="video-details"><b>${p.teacherName}</b><small><span id="views-${p.id}">${p.views}</span> views</small></div>
+                            <div class="more-options" style="${showMenu}" onclick="toggleMenu('${p.id}')">⋮</div>
+                            <div class="menu-dropdown" id="menu-${p.id}"><button onclick="deletePost('${p.id}')">🗑️ Delete</button></div>
+                        </div>
+                        <div class="action-bar">
+                            <button class="action-btn" onclick="likePost('${p.id}')">👍 <span id="like-${p.id}">${p.likes || 0}</span></button>
+                            <button class="action-btn" onclick="sharePost('${p.fileUrl}')">🔗 Share</button>
+                        </div>
+                    </div>
+                `);
+                listenToLiveUpdates(p.id);
+            });
+        });
+    }
+
+    function listenToLiveUpdates(id) {
+        db.ref('posts/'+id).on('value', snap => {
+            const d = snap.val(); if(!d) return;
+            const l = document.getElementById('like-'+id); if(l) l.innerText = d.likes || 0;
+            const v = document.getElementById('views-'+id); if(v) v.innerText = d.views || 0;
+        });
+    }
+
+    function updateBalanceRealtime() {
+        db.ref('posts').on('value', snap => {
+            let totalViews = 0;
+            snap.forEach(c => {
+                const p = c.val();
+                if(p.userId === auth.currentUser.uid) totalViews += (p.views || 0);
+            });
+            let balance = totalViews * 0.35;
+            document.getElementById('statViews').innerText = totalViews;
+            document.getElementById('topBalance').innerText = balance.toFixed(2) + " ETB";
+            document.querySelectorAll('.displayBalance').forEach(el => el.innerText = balance.toFixed(2) + " ETB");
+        });
+    }
+
+    function requestWithdraw() {
+        const bal = parseFloat(document.getElementById('topBalance').innerText);
+        const bank = document.getElementById('bankName').value;
+        const acc = document.getElementById('accNumber').value;
+        if(!bank) return alert("እባክዎ መጀመሪያ ባንክ ይምረጡ።");
+        if(bal < 100) return alert("ዝቅተኛው የክፍያ መጠን 100 ETB ነው።");
+        if(!acc) return alert("እባክዎ የአካውንት ቁጥር ያስገቡ።");
+        alert(`የወጪ ጥያቄዎ ለ ${bank} ቁጥር ${acc} ተልኳል። በ24 ሰአት ውስጥ ይስተካከላል።`);
+    }
+
+    function toggleMenu(id) {
+        const m = document.getElementById('menu-'+id);
+        m.style.display = (m.style.display === 'block' ? 'none' : 'block');
+    }
+
+    function deletePost(id) {
+        if(confirm("ይህ ዳእዋ ይጥፋ?")) db.ref('posts/'+id).remove().then(() => {
+             const card = document.getElementById('card-'+id);
+             if(card) card.remove();
+        });
+    }
+
+    function likePost(id) { db.ref('posts/'+id+'/likes').transaction(c => (c || 0) + 1); }
+
+    function addView(id) {
+        if(!localStorage.getItem('v_'+id)) {
+            db.ref('posts/'+id+'/views').transaction(c => (c || 0) + 1);
+            localStorage.setItem('v_'+id, '1');
+        }
+    }
+
+    function sharePost(url) {
+        if(navigator.share) navigator.share({title: 'Salafiya Dawa', url: url});
+        else alert("Link: " + url);
+    }
+
+    async function uploadPost() {
+        const file = document.getElementById('vFile').files[0];
+        if(!file) return alert("ፋይል ይምረጡ!");
+        const btn = document.getElementById('uploadBtn');
+        btn.disabled = true; btn.innerText = "Uploading...";
+
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', 'dawa-upload');
+
+        try {
+            const res = await fetch('https://api.cloudinary.com/v1_1/dhltee5bv/auto/upload', { method: 'POST', body: formData });
+            const data = await res.json();
+            
+            db.ref('posts').push({
+                teacherName: auth.currentUser.displayName,
+                userId: auth.currentUser.uid,
+                fileUrl: data.secure_url,
+                fileType: file.type.includes('video') ? 'video' : 'audio',
+                views: 0, likes: 0
+            }).then(() => location.reload());
+        } catch(e) {
+            alert("Upload failed. Try again.");
+            btn.disabled = false; btn.innerText = "Upload Now";
+        }
+    }
+</script>
+</body>
+</html>
