@@ -1,85 +1,66 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+// የተማሪውን ስም ለጊዜው ለመያዝ
+let currentStudentName = ""; 
 
-// Firebase Configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyCP0aVVyOIJ-VyqKqGj0nrtT2z6LMIIz_k",
-  authDomain: "nur-live-app.firebaseapp.com",
-  databaseURL: "https://nur-live-app-default-rtdb.firebaseio.com/", 
-  projectId: "nur-live-app",
-  storageBucket: "nur-live-app.firebasestorage.app",
-  messagingSenderId: "66758079300",
-  appId: "1:66758079300:web:c098592f0573410ebddd11"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-
-// 1. የተማሪዎች ምዝገባ ተግባር
+// 1. ተመዝግቦ ወደ ቀጣዩ ክፍል ማለፍ
 window.registerAndNext = function() {
-    const name = document.getElementById('studentName').value.trim();
-    const phone = document.getElementById('phoneNumber').value.trim();
+    const nameInput = document.getElementById('studentName');
+    const phoneInput = document.getElementById('phoneNumber');
+    
+    currentStudentName = nameInput.value.trim(); // ስሙን እዚህ እንይዘዋለን
+    const phone = phoneInput.value.trim();
 
-    if (name === "" || phone === "") {
-        alert("እባክዎ ስም እና ስልክ በትክክል ያስገቡ!");
+    if (currentStudentName === "" || phone === "") {
+        alert("እባክዎ ስም እና ስልክ ያስገቡ!");
         return;
     }
 
-    const studentsRef = ref(db, 'students');
-    
-    // ዳታውን ወደ Firebase መላክ
-    push(studentsRef, {
-        fullName: name,
+    // Firebase ላይ መረጃውን መመዝገብ
+    push(ref(db, 'students'), {
+        fullName: currentStudentName,
         phone: phone,
-        date: new Date().toLocaleString('am-ET') // በኢትዮጵያ አቆጣጠር እንዲሆን
-    })
-    .then(() => {
-        alert("በተሳካ ሁኔታ ተመዝግበዋል!");
-        // ምዝገባው ሲያልቅ ክፍሎቹን መቀያየር
+        date: new Date().toLocaleString('am-ET')
+    }).then(() => {
+        // የምዝገባውን ፎርም መደበቅ
         document.getElementById('registration-section').style.display = 'none';
+        // የቪዲዮ መግቢያውን ማሳየት
         document.getElementById('login-section').style.display = 'block';
-    })
-    .catch((error) => {
-        console.error("Error adding student: ", error);
-        alert("ምዝገባው አልተሳካም፣ እባክዎ ድጋሚ ይሞክሩ።");
-    });
+    }).catch(err => alert("ስህተት አጋጥሟል፦ " + err.message));
 };
 
-// 2. የቪዲዮ ትምህርቱን የመጀመር ተግባር
+// 2. የቪዲዮ ትምህርት መጀመር
 window.startLesson = function() {
     const className = document.getElementById('className').value.trim();
-    const meetContainer = document.querySelector('#meet');
-
-    if (className === "") { 
-        alert("እባክዎ የክፍል ስም ያስገቡ!"); 
-        return; 
-    }
-
-    // Jitsi API መጫኑን ማረጋገጥ
-    if (typeof JitsiMeetExternalAPI === 'undefined') {
-        alert("የቪዲዮ ማገናኛው አልተጫነም (Jitsi Script is missing)");
-        return;
-    }
+    if (className === "") { alert("እባክዎ የክፍል ስም ያስገቡ!"); return; }
 
     const domain = 'meet.jit.si';
     const options = {
-        roomName: 'NurLive-' + className.replace(/\s+/g, '-'), // ክፍተቶችን በ ሰረዝ (-) መተካት
+        roomName: 'NurLive-' + className.replace(/\s+/g, '-'),
         width: '100%',
-        height: 500,
-        parentNode: meetContainer,
+        height: '100%',
+        parentNode: document.querySelector('#meet'),
+        
+        // --- ማስታወቂያውን ለማጥፋት እና በቀጥታ ለማስገባት ---
         configOverwrite: { 
-            disableDeepLinking: true, 
-            prejoinPageEnabled: false 
+            disableDeepLinking: true,   // "Join in App" የሚለውን ገጽ ያጠፋል
+            prejoinPageEnabled: false,  // "Join Meeting" የሚለውን ቁልፍ ሳያስነካ ያስገባል
+            startWithAudioMuted: false, // በኦዲዮ በቀጥታ እንዲገባ
+            startWithVideoMuted: false  // በቪዲዮ በቀጥታ እንዲገባ
         },
+        
         interfaceConfigOverwrite: { 
-            SHOW_JITSI_WATERMARK: false,
-            MOBILE_APP_PROMO: false 
+            MOBILE_APP_PROMO: false,    // የሞባይል አፕ ማስታወቂያን ይደብቃል
+            SHOW_JITSI_WATERMARK: false 
+        },
+
+        // --- የተማሪውን ስም ለ Jitsi ማስተላለፍ ---
+        userInfo: {
+            displayName: currentStudentName // ተመዝግቦ የገባበት ስም
         }
     };
-
-    // የቆየ የቪዲዮ መስኮት ካለ ማጽዳት
-    meetContainer.innerHTML = "";
     
-    // አዲሱን የቪዲዮ መስኮት መክፈት
+    // የቆየ የቪዲዮ መስኮት ካለ ማጽዳት
+    document.getElementById('meet').innerHTML = ""; 
+    
+    // አዲሱን የቪዲዮ ስብሰባ መጀመር
     new JitsiMeetExternalAPI(domain, options);
 };
