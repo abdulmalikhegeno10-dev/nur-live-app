@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>የአስተማሪ መቆጣጠሪያ - ኑር</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1 id="main-title">የተመዘገቡ ተማሪዎች (0)</h1>
+
+        <div id="student-list" style="margin-top: 20px;">
+            <p>መረጃ በመፈለግ ላይ...</p>
+        </div>
+        <button onclick="window.location.href='index.html'" style="margin-top:20px; background: #555; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">ወደ ተማሪዎች ገጽ</button>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCP0aVVyOIJ-VyqKqGj0nrtT2z6LMIIz_k",
+            authDomain: "nur-live-app.firebaseapp.com",
+            databaseURL: "https://nur-live-app-default-rtdb.firebaseio.com/", 
+            projectId: "nur-live-app",
+            storageBucket: "nur-live-app.firebasestorage.app",
+            messagingSenderId: "66758079300",
+            appId: "1:66758079300:web:c098592f0573410ebddd11"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const listDiv = document.getElementById('student-list');
+
+        // Fetch Data
+        onValue(ref(db, 'students'), (snapshot) => {
+            listDiv.innerHTML = ""; // ገጹን ማጽዳት
+            const data = snapshot.val();
+
+            // 1. የተመዘገቡ ተማሪዎችን ብዛት ማስላት
+            const count = data ? Object.keys(data).length : 0;
+            document.getElementById('main-title').innerText = `የተመዘገቡ ተማሪዎች (${count})`;
+
+            // 2. ዳታው መኖሩን ማረጋገጥ እና መዘርዘር
+            if(data) {
+                // መረጃውን ወደ Array ቀይሮ በጊዜ ቅደም ተከተል ለመደርደር reverse() መጠቀም ይቻላል
+                Object.values(data).reverse().forEach(s => {
+                    listDiv.innerHTML += `
+                        <div style="border: 1px solid #d4af37; padding: 15px; margin-bottom: 10px; border-radius: 8px; text-align: left; background-color: #f9f9f9;">
+                            <p style="margin: 5px 0;"><b>ስም:</b> ${s.fullName} </p>
+                            <p style="margin: 5px 0;"><b>ስልክ:</b> ${s.phone}</p>
+                            <small style="color: #888;">የተመዘገበበት ቀን: ${s.date}</small>
+                        </div>`;
+                });
+            } else {
+                listDiv.innerHTML = "<p>እስካሁን ማንም አልተመዘገበም።</p>";
+            }
+        });
+    </script>
+</body>
+</html>
