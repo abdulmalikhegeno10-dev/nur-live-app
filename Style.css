@@ -2,81 +2,110 @@
 
 body {
     font-family: 'Poppins', 'Noto Sans Ethiopic', sans-serif;
-    /* የጀርባው ቀለም ወደ ጥቁር አረንጓዴ የተቀየረ የወርቁን ቀለም እንዲያጎላው ነው */
-    background: radial-gradient(circle, #002b1a 0%, #001a0f 100%);
+    /* የጀርባው ቀለም - ጥቁር አረንጓዴ እና ወርቃማ ድምቀት */
+    background: radial-gradient(circle, #002b1a 0%, #00120a 100%);
     margin: 0;
+    padding: 20px; /* በሞባይል ስልክ ዳር እንዳይነካ */
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh; /* height: 100vh; ይልቅ min-height ይሻላል */
+    color: #ffffff;
 }
 
 .container {
-    background-color: rgba(255, 255, 255, 0.05); /* ግልጽ የሆነ ጥቁር ሳጥን */
-    padding: 40px;
+    background-color: rgba(255, 255, 255, 0.07);
+    padding: 35px 25px;
     border-radius: 24px;
-    border: 1px solid #d4af37; /* የወርቅ ቀለም ዳርቻ */
-    box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-    width: 90%;
-    max-width: 380px;
+    border: 1px solid rgba(212, 175, 55, 0.5); /* የወርቅ ቀለም በግልጽነት */
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+    width: 100%;
+    max-width: 400px;
     text-align: center;
-    backdrop-filter: blur(10px); /* የመስታወት መሰል ዲዛይን */
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
 }
 
-/* የወርቃማ ጽሑፍ ውጤት */
+/* ወርቃማ ርዕስ */
 h1 {
     background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    font-size: 28px;
+    font-size: 26px;
     font-weight: 700;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
 }
 
 h3 {
-    color: #d4af37; /* የወርቅ ቀለም */
+    color: #d4af37;
     font-weight: 500;
     margin-bottom: 20px;
+    font-size: 18px;
 }
 
 p {
-    color: #a0a0a0;
+    color: #cccccc;
     font-size: 14px;
+    line-height: 1.6;
 }
 
+/* የጽሑፍ መፃፊያ ሳጥኖች (Input) */
 input {
     width: 100%;
     padding: 14px;
-    margin-bottom: 15px;
-    border: 1px solid #333;
+    margin-bottom: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 12px;
-    background-color: rgba(255, 255, 255, 0.1);
-    color: white; /* የሚጻፈው ጽሑፍ ነጭ እንዲሆን */
+    background-color: rgba(0, 0, 0, 0.3);
+    color: #fff;
+    font-size: 16px;
     box-sizing: border-box;
+    transition: 0.3s;
+}
+
+input::placeholder {
+    color: rgba(255, 255, 255, 0.5); /* የውስጥ ጽሑፉን በደንብ እንዲታይ ማድረግ */
 }
 
 input:focus {
     border-color: #d4af37;
     outline: none;
+    background-color: rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 8px rgba(212, 175, 55, 0.2);
 }
 
-/* ወርቃማ ቁልፍ (Gold Button) */
+/* ወርቃማ ቁልፍ (Button) */
 button {
     width: 100%;
-    padding: 15px;
+    padding: 16px;
     background: linear-gradient(45deg, #bf953f, #d4af37);
-    color: #001a0f; /* በወርቁ ላይ ጥቁር ጽሑፍ እንዲታይ */
+    color: #001a0f;
     border: none;
     border-radius: 12px;
     cursor: pointer;
     font-size: 16px;
     font-weight: 700;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 button:hover {
     background: linear-gradient(45deg, #d4af37, #fcf6ba);
-    transform: scale(1.02);
-    box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+    transform: translateY(-3px); /* ወደ ላይ ከፍ የማለት ውጤት */
+    box-shadow: 0 10px 20px rgba(212, 175, 55, 0.4);
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+/* የተማሪዎች ዝርዝር ካርድ (Teacher page ላይ የምትጠቀመው ከሆነ) */
+.student-card {
+    border: 1px solid #d4af37;
+    padding: 15px;
+    margin-top: 15px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    text-align: left;
 }
