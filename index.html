@@ -3,24 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ኑር ኢስላማዊ ትምህርት - NUR Live</title>
+    <title>ኑር ኢስላማዊ ትምህርት</title>
     <link rel="stylesheet" href="style.css">
-    <script src='https://meet.jit.si/external_api.js'></script>
+    <style>
+        /* ወደ ክፍል መግቢያን ለጊዜው መደበቂያ */
+        #login-section { display: none; }
+    </style>
 </head>
 <body>
-    <div id="setup-container">
-        <div class="logo-area">
-            <div class="logo-circle">ኑር</div>
-            <h1>ኑር ኢስላማዊ ትምህርት</h1>
-        </div>
+    <div class="container">
+        <h1>ኑር ኢስላማዊ ትምህርት</h1>
         
-        <p>የክፍሉን ስም እና ስምዎን ያስገቡ</p>
-        <input type="text" id="room-name" placeholder="የክፍል ስም (ለምሳሌ፡ ቁርኣን)">
-        <button id="start-btn">ትምህርት ጀምር</button>
+        <div id="registration-section">
+            <h3>መጀመሪያ ይመዝገቡ</h3>
+            <p>ትምህርቱን ለመጀመር ስምዎን እና ስልክዎን ያስገቡ</p>
+            <input type="text" id="studentName" placeholder="ሙሉ ስም">
+            <input type="tel" id="phoneNumber" placeholder="ስልክ ቁጥር">
+            <button onclick="registerAndNext()">ተመዝገብ</button>
+        </div>
+
+        <div id="login-section">
+            <h3 style="color: #2ecc71;">ምዝገባዎ ተሳክቷል!</h3>
+            <p>አሁን የክፍሉን ስም አስገብተው ይግቡ</p>
+            <input type="text" id="className" placeholder="የክፍል ስም (ለምሳሌ፡ ተውሂድ)">
+            <button onclick="startLesson()">ወደ ክፍል ግባ</button>
+        </div>
     </div>
 
-    <div id="meet-container"></div>
-
-    <script src="main.js"></script>
+    <script type="module" src="main.js"></script>
 </body>
 </html>
