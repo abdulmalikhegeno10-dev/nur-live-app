@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>የአስተማሪ ገጽ - ኑር ኢስላማዊ ትምህርት</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .student-card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid #d4af37;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 12px;
+            text-align: left;
+            color: white;
+        }
+        .student-card span { color: #d4af37; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container" style="max-width: 600px;">
+        <h1>የአስተማሪ መቆጣጠሪያ</h1>
+        <h3 id="status">የተመዘገቡ ተማሪዎች ዝርዝር</h3>
+        <div id="student-list">
+            <p>በመጫን ላይ...</p>
+        </div>
+        <button onclick="window.location.href='index.html'" style="margin-top: 20px;">ወደ ዋናው ገጽ ተመለስ</button>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCP0aVVyOIJ-VyqKqGj0nrtT2z6LMIIz_k",
+            authDomain: "nur-live-app.firebaseapp.com",
+            databaseURL: "https://nur-live-app-default-rtdb.firebaseio.com/", 
+            projectId: "nur-live-app",
+            storageBucket: "nur-live-app.firebasestorage.app",
+            messagingSenderId: "66758079300",
+            appId: "1:66758079300:web:c098592f0573410ebddd11"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const studentListDiv = document.getElementById('student-list');
+
+        // መረጃውን ከ Firebase በቀጥታ ማንበብ
+        const studentsRef = ref(db, 'students');
+        onValue(studentsRef, (snapshot) => {
+            studentListDiv.innerHTML = "";
+            const data = snapshot.val();
+            if (data) {
+                Object.values(data).reverse().forEach(student => {
+                    const card = `
+                        <div class="student-card">
+                            <p><span>ስም:</span> ${student.fullName}</p>
+                            <p><span>ስልክ:</span> ${student.phone}</p>
+                            <p style="font-size: 10px; color: #888;">ቀን: ${student.date}</p>
+                        </div>
+                    `;
+                    studentListDiv.innerHTML += card;
+                });
+            } else {
+                studentListDiv.innerHTML = "<p>እስካሁን የተመዘገበ ተማሪ የለም።</p>";
+            }
+        });
+    </script>
+</body>
+</html>
