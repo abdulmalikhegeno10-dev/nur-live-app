@@ -6,8 +6,12 @@
     <title>ኑር ኢስላማዊ ትምህርት</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* ወደ ክፍል መግቢያን ለጊዜው መደበቂያ */
-        #login-section { display: none; }
+        /* CSS ማስተካከያ */
+        .container { max-width: 600px; margin: auto; padding: 20px; text-align: center; }
+        input { width: 90%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; }
+        button { padding: 10px 20px; background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background-color: #218838; }
+        #meet { margin-top: 15px; border: 2px solid #d4af37; }
     </style>
 </head>
 <body>
@@ -19,17 +23,77 @@
             <p>ትምህርቱን ለመጀመር ስምዎን እና ስልክዎን ያስገቡ</p>
             <input type="text" id="studentName" placeholder="ሙሉ ስም">
             <input type="tel" id="phoneNumber" placeholder="ስልክ ቁጥር">
+            <br>
             <button onclick="registerAndNext()">ተመዝገብ</button>
         </div>
 
-        <div id="login-section">
-            <h3 style="color: #2ecc71;">ምዝገባዎ ተሳክቷል!</h3>
-            <p>አሁን የክፍሉን ስም አስገብተው ይግቡ</p>
-            <input type="text" id="className" placeholder="የክፍል ስም (ለምሳሌ፡ ተውሂድ)">
-            <button onclick="startLesson()">ወደ ክፍል ግባ</button>
-        </div>
-    </div>
+        <div id="login-section" style="display:none;">
+            <h2 id="room-name-display">ወደ ክፍሉ እንኳን መጡ</h2>
+            
+            <div id="meet" style="width: 100%; height: 450px; border-radius: 10px; overflow: hidden; background: #000; margin-bottom: 15px;">
+                </div>
 
-    <script type="module" src="main.js"></script>
+            <input type="text" id="className" placeholder="የክፍል ስም (ለምሳሌ፦ ተውሂድ)">
+            <br>
+            <button onclick="startLesson()">ትምህርት ጀምር</button>
+        </div>
+    </div> <script src='https://meet.jit.si/external_api.js'></script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCP0aVVyOIJ-VyqKqGj0nrtT2z6LMIIz_k",
+            authDomain: "nur-live-app.firebaseapp.com",
+            databaseURL: "https://nur-live-app-default-rtdb.firebaseio.com/", 
+            projectId: "nur-live-app",
+            storageBucket: "nur-live-app.firebasestorage.app",
+            messagingSenderId: "66758079300",
+            appId: "1:66758079300:web:c098592f0573410ebddd11"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // ተመዝግቦ ወደ ቀጣዩ ክፍል ማለፍ
+        window.registerAndNext = function() {
+            const name = document.getElementById('studentName').value.trim();
+            const phone = document.getElementById('phoneNumber').value.trim();
+
+            if (name === "" || phone === "") {
+                alert("እባክዎ ስም እና ስልክ ያስገቡ!");
+                return;
+            }
+
+            push(ref(db, 'students'), {
+                fullName: name,
+                phone: phone,
+                date: new Date().toLocaleString('am-ET')
+            }).then(() => {
+                document.getElementById('registration-section').style.display = 'none';
+                document.getElementById('login-section').style.display = 'block';
+            }).catch(err => alert("ስህተት አጋጥሟል፦ " + err.message));
+        };
+
+        // የቪዲዮ ትምህርት መጀመር
+        window.startLesson = function() {
+            const className = document.getElementById('className').value.trim();
+            if (className === "") { alert("እባክዎ የክፍል ስም ያስገቡ!"); return; }
+
+            const domain = 'meet.jit.si';
+            const options = {
+                roomName: 'NurLive-' + className.replace(/\s+/g, '-'),
+                width: '100%',
+                height: '100%',
+                parentNode: document.querySelector('#meet'),
+                configOverwrite: { prejoinPageEnabled: false },
+                interfaceConfigOverwrite: { SHOW_JITSI_WATERMARK: false }
+            };
+            
+            document.getElementById('meet').innerHTML = ""; // የቆየ ካለ ማጽዳት
+            new JitsiMeetExternalAPI(domain, options);
+        };
+    </script>
 </body>
 </html>
