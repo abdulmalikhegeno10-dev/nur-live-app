@@ -4,7 +4,7 @@ import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/
 const firebaseConfig = {
   apiKey: "AIzaSyCP0aVVyOIJ-VyqKqGj0nrtT2z6LMIIz_k",
   authDomain: "nur-live-app.firebaseapp.com",
-  databaseURL: "https://nur-live-app-default-rtdb.firebaseio.com/", // ያንተ ሊንክ እዚህ ገብቷል
+  databaseURL: "https://nur-live-app-default-rtdb.firebaseio.com/", 
   projectId: "nur-live-app",
   storageBucket: "nur-live-app.firebasestorage.app",
   messagingSenderId: "66758079300",
@@ -14,6 +14,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
+// ምዝገባውን ለመቆጣጠር
 window.registerAndNext = function() {
     const name = document.getElementById('studentName').value;
     const phone = document.getElementById('phoneNumber').value;
@@ -23,8 +24,9 @@ window.registerAndNext = function() {
         return;
     }
 
-    const studentsListRef = ref(db, 'students');
-    const newStudentRef = push(studentsListRef);
+    const studentsRef = ref(db, 'students');
+    const newStudentRef = push(studentsRef);
+    
     set(newStudentRef, {
         fullName: name,
         phone: phone,
@@ -35,4 +37,14 @@ window.registerAndNext = function() {
     }).catch((error) => {
         alert("ስህተት፡ " + error.message);
     });
+}
+
+// የቀጥታ ስርጭት ክፍሉን ለመክፈት (ስህተቱን የሚያጠፋው ይሄ ነው)
+window.startLesson = function() {
+    const className = document.getElementById('className').value;
+    if (className === "") {
+        alert("እባክዎ የክፍል ስም ያስገቡ!");
+        return;
+    }
+    alert(className + " ክፍል ውስጥ ገብተዋል። ስርጭቱ ይጀምራል!");
 }
